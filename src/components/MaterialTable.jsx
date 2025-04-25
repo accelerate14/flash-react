@@ -1,27 +1,26 @@
-// components/MaterialTable.jsx
 import React from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-
+ 
 const MaterialTable = ({ users }) => {
-
+ 
     const navigate = useNavigate();
-
+ 
     const handleNameClick = (employeeId) => {
         navigate(`/edit/${employeeId}`);
     };
-
+ 
     const formatDate = (dateString) => {
-        if (!dateString) return '';
+        if (dateString == "NULL") return 'NULL';
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
         const day = String(date.getDate()).padStart(2, '0');
         const year = date.getFullYear();
         return `${month}-${day}-${year}`;
     };
-
+ 
     return (
         <TableContainer component={Paper} className="shadow-md">
             <Table>
@@ -35,6 +34,8 @@ const MaterialTable = ({ users }) => {
                         <TableCell align="center" >Participation Type</TableCell>
                         <TableCell align="center" >Group Code</TableCell>
                         <TableCell align="center" >Client</TableCell>
+                        <TableCell align="center" >Start Date</TableCell>
+                        <TableCell align="center" >End Date</TableCell>
                         <TableCell align="center" >Total Allocation (%)</TableCell>
                     </TableRow>
                 </TableHead>
@@ -57,6 +58,8 @@ const MaterialTable = ({ users }) => {
                             >{user.PARTICIPATION_TYPE ? user.PARTICIPATION_TYPE : "NOT ASSIGNED"}</Link></TableCell>
                             <TableCell align="center" >{user.C_GROUP_CODE ? user.C_GROUP_CODE : "NULL"}</TableCell>
                             <TableCell align="center" >{user.C_ASSIGNED_CLIENT ? user.C_ASSIGNED_CLIENT : "NULL"}</TableCell>
+                            <TableCell align="center" >{formatDate(user.C_SOW_Start ? user.C_SOW_Start : "NULL")}</TableCell>
+                            <TableCell align="center" >{formatDate(user.C_SOW_End ? user.C_SOW_End : "NULL")}</TableCell>
                             <TableCell align="center" >{user.Total_Allocation ? user.Total_Allocation : "0"}%</TableCell>
                         </TableRow>
                     ))}
@@ -65,5 +68,5 @@ const MaterialTable = ({ users }) => {
         </TableContainer>
     );
 };
-
+ 
 export default MaterialTable;

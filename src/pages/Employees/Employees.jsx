@@ -119,43 +119,54 @@ const Employee = () => {
 
 
 
-
   const downloadCSV = () => {
     const headers = [
       'FIRST_NAME',
       'LAST_NAME',
       'HIRE_DATE',
-      'Status',
+      'Employee_Status',
       'LOCATION_CONCAT',
       'PARTICIPATION_TYPE',
       'C_GROUP_CODE',
       'C_ASSIGNED_CLIENT',
-      'Total_Allocation'
+      'C_SOW_Start',
+      'C_SOW_End',
+      'Total_Allocation',
     ];
-
-    const formatDate = dateStr => {
+  
+    const formatDateOrNull = (dateStr) => {
       const d = new Date(dateStr);
-      if (isNaN(d)) return '';
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
+      if (!dateStr || isNaN(d)) return 'null';
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
       return `${mm}/${dd}/${d.getFullYear()}`;
     };
-
+  
     const csvRows = [
       headers.join(','), 
       ...filteredUsers.map(u =>
         headers.map(h => {
-          let v = u[h];
-          if (h === 'HIRE_DATE')          return `"${formatDate(v)}"`;
-          if (h === 'Status')             return `"${v ?? 'Active'}"`;
-          if (['LOCATION_CONCAT','PARTICIPATION_TYPE','C_GROUP_CODE','C_ASSIGNED_CLIENT']
-                                           .includes(h) && !v)    return `"null"`;
-          if (h === 'Total_Allocation')   return (v == null || v==='') ? '0' : v;
-          return `"${(v ?? '').toString().replace(/"/g,'""')}"`;
+          switch (h) {
+            case 'HIRE_DATE':
+            case 'C_SOW_Start':
+            case 'C_SOW_End':
+              return `"${formatDateOrNull(u[h])}"`;
+            case 'Employee_Status':
+              return `"${u[h] ?? 'ACTIVE'}"`; // default fallback
+            case 'LOCATION_CONCAT':
+            case 'PARTICIPATION_TYPE':
+            case 'C_GROUP_CODE':
+            case 'C_ASSIGNED_CLIENT':
+              return `"${u[h] ?? 'null'}"`; // use string "null" if empty
+            case 'Total_Allocation':
+              return u[h] == null || u[h] === '' ? '0' : u[h];
+            default:
+              return `"${(u[h] ?? '').toString().replace(/"/g, '""')}"`;
+          }
         }).join(',')
       )
     ];
-
+  
     const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -163,6 +174,8 @@ const Employee = () => {
     link.click();
   };
   
+  
+
   
   const filteredUsers = filterData(users);
 
