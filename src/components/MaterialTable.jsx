@@ -2,15 +2,15 @@ import React from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
  
 const MaterialTable = ({ users }) => {
  
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
  
-    const handleNameClick = (employeeId) => {
-        navigate(`/edit/${employeeId}`);
-    };
+    // const handleNameClick = (employeeId) => {
+    //     navigate(`/edit/${employeeId}`);
+    // };
  
     const formatDate = (dateString) => {
         if (dateString == "NULL") return 'NULL';

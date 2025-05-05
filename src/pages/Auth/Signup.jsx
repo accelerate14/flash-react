@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import "./authstyle.css"; // make sure this path is correct
 
@@ -158,7 +158,7 @@ const Signup = () => {
           <div className="form-link">
             <span>
               Already have an account?{" "}
-              <a href="/auth/login" className="link login-link">Login</a>  
+              <Link to="/auth/login" className="link login-link">Login</Link>  
             </span>
           </div>
         </div>

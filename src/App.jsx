@@ -97,6 +97,8 @@ import EditLocation from './pages/Locations/EditLocation';
 import Location from './pages/Locations/Location';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import Example from './components/Example';
+ 
 
 
 function AppContent({ isAuthenticated, logout }) {
@@ -137,6 +139,8 @@ function AppContent({ isAuthenticated, logout }) {
 
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
+        <Route path='/ex' element={<Example/>}/>
+        {/* <Route path='/Newl' element={<Newl/>}/> */}
       </Routes>
 
       {!shouldHideNavbar && <Footer />}

@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles.css'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Typography
+} from '@mui/material';
+
 const Participations = () => {
   const [participations, setParticipations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,18 +19,13 @@ const Participations = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchParticipations();
-  }, []);
-
- 
-  
-    useEffect(() => {    
-        // localStorage.getItem('authToken');
-        const token =localStorage.getItem('authToken') ;
-        if (!token) {
-          navigate('/auth/login'); // Adjust path as needed
-        }
-      }, [navigate]);
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/auth/login');
+    } else {
+      fetchParticipations();
+    }
+  }, [navigate]);
 
   const fetchParticipations = async () => {
     try {
@@ -43,54 +49,106 @@ const Participations = () => {
     setSearchTerm('');
   };
 
-  const filteredParticipations = participations.filter(p =>
+  const filteredParticipations = participations.filter((p) =>
     p.PARTICIPATION_TYPE.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="participation-page">
-      <div className="search-container">
-        <div className="search-group">
-          <label htmlFor="participation-input">Search by Participation Type</label>
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <div className="w-full md:w-auto">
+          <label htmlFor="participation-input" className="block mb-1 font-semibold text-gray-700">
+            Search by Participation Type
+          </label>
           <input
             type="text"
             id="participation-input"
             placeholder="Participation Type"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full md:w-72 border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="search-group">
-          <button onClick={handleClearFilters}>Clear All Filters</button>
-        </div>
+
+        <div className="flex flex-wrap gap-2 justify-end">
+            <button
+              onClick={handleClearFilters}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 transition"
+            >
+              Clear Filters
+            </button>
+            <button
+              onClick={() => navigate('/add-participation')}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-red-300 transition"
+            >
+              Add New Participation
+            </button>
+</div>
+
       </div>
 
-      <div className="participation-container">
-        <div className="new-participation-card" onClick={() => navigate('/add-participation')}>
-          Add New Participation
-        </div>
-
-        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-
-        {filteredParticipations.length === 0 && !error ? (
-          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>No coincidence found</p>
+      <TableContainer
+        component={Paper}
+        sx={{
+          boxShadow: 3,
+          borderRadius: 2,
+        }}
+      >
+        {error ? (
+          <Typography color="error" align="center" sx={{ fontWeight: 'bold', py: 2 }}>
+            {error}
+          </Typography>
+        ) : filteredParticipations.length === 0 ? (
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{ padding: 2, fontWeight: 'bold' }}
+          >
+            No coincidence found
+          </Typography>
         ) : (
-          filteredParticipations.map(participation => (
-            <div className="participation-card" key={participation.ParticipationID}>
-              <h2>{participation.PARTICIPATION_TYPE}</h2>
-              <div className="button-container" style={{ textAlign: 'center' }}>
-                <button
-                  className="edit-button"
-                  onClick={() => navigate(`/edit-participation/${participation.ParticipationID}`)}
-                >
-                  Edit Participation
-                </button>
-              </div>
-            </div>
-          ))
+          <Table>
+            <TableHead>
+              <TableRow  className='bg-gray-200'>
+                <TableCell><strong>Participation Type</strong></TableCell>
+                <TableCell align="center"><strong>Actions</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredParticipations.map((participation) => (
+                <TableRow key={participation.ParticipationID}>
+                  <TableCell>{participation.PARTICIPATION_TYPE}</TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{
+                        px: 2, // equivalent to Tailwind px-4
+                        py: 0.5, // equivalent to Tailwind py-1
+                        fontSize: '0.875rem', // text-sm
+                        borderRadius: '6px', // rounded
+                        backgroundColor: '#2563eb', // bg-blue-600
+                        textTransform: 'none',
+                        '&:hover': {
+                          backgroundColor: '#1d4ed8' // hover:bg-blue-700
+                        },
+                        transition: 'background-color 0.2s ease-in-out'
+                      }}
+                      onClick={() =>
+                        navigate(`/edit-participation/${participation.ParticipationID}`)
+                      }
+                    >
+                      Edit Participation
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
-      </div>
-    </div>
+      </TableContainer>
+    </section>
   );
 };
 

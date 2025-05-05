@@ -1,10 +1,9 @@
-// Login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-// import "./authstyle.css"; // assuming your CSS is here
-import { Eye, EyeOff } from "lucide-react"; // or any icon library you use
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import logo from "./image.jpg";
 
-const Login = () => {
+const Newl = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,14 +12,13 @@ const Login = () => {
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
-    const apiUrl = "https://flash-backend-cpfrguethpanfhdz.centralus-01.azurewebsites.net/api/auth/login";
+    const apiUrl =
+      "https://flash-backend-cpfrguethpanfhdz.centralus-01.azurewebsites.net/api/auth/login";
 
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -40,62 +38,103 @@ const Login = () => {
   };
 
   return (
-    <section className="container-login forms">
-      <div className="form login">
-        <div className="form-content">
-          <header className="login-header">Login</header>
-          <form onSubmit={handleLoginSubmit}>
-            <div className="field input-field">
-              <input
-                type="email"
-                placeholder="Email"
-                className="input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="field input-field" style={{ position: "relative" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
-            </div>
-
-            <div className="field button-field">
-              <button type="submit" className="btn">Login</button>
-            </div>
-          </form>
-
-          <div className="form-link">
-            <span>
-              Don't have an account?{" "}
-              <a href="/auth/signup" className="link signup-link">
-                Signup
-              </a>
-            </span>
-          </div>
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Top Blue Header with Red Bottom Border */}
+      <div className="bg-[#01316B] border-b-[14px] border-[#DC0022] py-3 px-6 flex items-center justify-between ">
+        {/* Logo image - replace 'logo.png' with actual image path */}
+        <div className="px-[68px] py-[4px]">
+          <img src={logo} alt="Accelerate Logo" className="h-12" />
         </div>
       </div>
-    </section>
+
+      {/* Page Title */}
+      <div className="mt-10 text-center">
+        <div
+          className="italic   text-[#010411] text-[25px] font-bold"
+          style={{
+            fontFamily: "Roboto, sans-serif",
+            letterSpacing: "6%",
+          }}
+        >
+          Accelirate Resource Management System
+        </div>
+      </div>
+
+      {/* Login Form Card */}
+      <div className="flex items-center justify-center   bg-white px-[27px]">
+  <div className="w-full max-w-sm bg-gray-50 p-6 rounded-xl space-y-[14px] mt-[35px]">
+    <h2 className="text-lg font-bold text-center mb-4">Login</h2>
+    <form onSubmit={handleLoginSubmit}>
+      {/* Email Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Email</label>
+        <input
+          type="email"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Password Input */}
+      <div className="mb-4 relative">
+        <label className="block text-sm font-medium mb-1">Password</label>
+        <input
+          type={showPassword ? "text" : "password"}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-9 cursor-pointer text-gray-500"
+        >
+          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+        </span>
+        <div className="text-right mt-1">
+          <a href="#" className="text-xs text-gray-500 hover:underline">
+            Forgot Password?
+          </a>
+        </div>
+      </div>
+
+      {/* Sign In Button */}
+      <div className="flex justify-center mt-4">
+  <button
+    type="submit"
+    className="w-[181px] h-[41px] text-black font-semibold rounded-[10px] border-2 border-black shadow-sm"
+  >
+    Sign in
+  </button>
+</div>
+
+
+
+
+
+
+    </form>
+
+    {/* Signup Link */}
+    <div
+  className="mt-4 text-center text-[16px] text-[#010411]"
+  style={{ fontFamily: "Roboto, sans-serif" }}
+>
+  Don’t have an account?{" "}
+  <Link to="/auth/signup" className="hover:underline">
+    Signup
+  </Link>
+</div>
+
+  </div>
+</div>
+
+
+    </div>
   );
 };
 
-export default Login;
+export default Newl;
