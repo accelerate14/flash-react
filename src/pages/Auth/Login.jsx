@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import logo from "./image.jpg";
 
-const Newl = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+
+
+  
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
@@ -26,8 +29,9 @@ const Newl = () => {
 
       if (result.token) {
         localStorage.setItem("authToken", result.token);
+        localStorage.setItem("username", result.email);
         alert("Login successful!");
-        navigate("/");
+        navigate("/ex");
       } else {
         alert("Login failed. Please check your credentials.");
       }
@@ -137,4 +141,4 @@ const Newl = () => {
   );
 };
 
-export default Newl;
+export default Login;

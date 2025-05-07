@@ -98,6 +98,8 @@ import Location from './pages/Locations/Location';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import Example from './components/Example';
+import NavbarTest from './components/NavbarTest';
+import AddUser from './pages/Employees/AddUser';
  
 
 
@@ -108,7 +110,7 @@ function AppContent({ isAuthenticated, logout }) {
 
   return (
     <>
-      {!shouldHideNavbar && <Navbar isAuthenticated={isAuthenticated} logout={logout} />}
+      {!shouldHideNavbar && <NavbarTest isAuthenticated={isAuthenticated} logout={logout} />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -116,6 +118,11 @@ function AppContent({ isAuthenticated, logout }) {
         <Route path="/employees" element={<Employees />} />
         <Route path="/edit/:EmployeeID" element={<Edit_Employees />} />
         <Route path="/assignments/:employeeId" element={<Assignments />} />
+
+
+
+        <Route path="/adduser" element={<AddUser />} />
+ 
 
         <Route path="/departments/" element={<Index />} />
         <Route path="/edit-department/" element={<EditDepartment />} />

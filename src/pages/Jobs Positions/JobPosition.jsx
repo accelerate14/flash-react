@@ -43,42 +43,47 @@ const JobPosition = () => {
   );
 
   return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <div className="w-full md:w-auto">
-          <label htmlFor="jobposition-input" className="block mb-1 font-semibold text-gray-700">
-            Search by Job Position
-          </label>
-          <input
-            id="jobposition-input"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Job Position"
-            className="w-full md:w-72 border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-end">
-          <button
-            onClick={() => setSearch('')}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 transition"
-          >
-            Clear Filters
-          </button>
-          <button
-            onClick={() => navigate('/add-jobposition')}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-blue-300 transition"
-          >
-            Add New Job Position
-          </button>
-        </div>
+    <section className="flex flex-col md:flex-row max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+    {/* Filter Sidebar */}
+    <aside className="fixed top-4 w-full md:w-52 h-[calc(100vh-2rem)] flex flex-col gap-4 pt-30 px-4 pb-6 bg-[#e2f4ff] overflow-y-auto rounded-2xl shadow-lg border border-gray-200">
+      
+      {/* Job Position Field */}
+      <div>
+        <label htmlFor="jobposition-input" className="block mb-1 font-semibold text-gray-700">
+          Job Position
+        </label>
+        <p className="text-sm text-gray-500 mb-1">Search by Job Position</p>
+        <input
+          id="jobposition-input"
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          // placeholder="Enter job position"
+          className="w-full border border-gray-300 bg-white rounded-2xl shadow-lg px-3 py-2 focus:outline-none"
+          style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+        />
       </div>
-
-      {error && (
-        <p className="text-red-500 text-center font-semibold py-2">{error}</p>
-      )}
-
+  
+      {/* Buttons */}
+      <button
+        onClick={() => setSearch('')}
+        className="w-full border border-gray-300 bg-white rounded-2xl shadow-lg px-3 py-2 focus:outline-none"
+        style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+      >
+        Clear Filters
+      </button>
+  
+      <button
+        onClick={() => navigate('/add-jobposition')}
+        className="w-full border border-gray-300 bg-white rounded-2xl shadow-lg px-3 py-2 focus:outline-none"
+        style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+      >
+        Add Job Position
+      </button>
+    </aside>
+  
+    {/* Table Content */}
+    <div className="flex-1 pl-56 overflow-x-auto">
       <TableContainer
         component={Paper}
         sx={{
@@ -97,7 +102,7 @@ const JobPosition = () => {
         ) : (
           <Table>
             <TableHead>
-              <TableRow  className='bg-gray-200'>
+              <TableRow className='bg-gray-200'>
                 <TableCell><strong>Job Position</strong></TableCell>
                 <TableCell align="center"><strong>Actions</strong></TableCell>
               </TableRow>
@@ -136,7 +141,9 @@ const JobPosition = () => {
           </Table>
         )}
       </TableContainer>
-    </section>
+    </div>
+  </section>
+  
   );
 };
 
