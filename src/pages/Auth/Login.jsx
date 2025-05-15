@@ -31,7 +31,7 @@ const Login = () => {
         localStorage.setItem("authToken", result.token);
         localStorage.setItem("username", result.email);
         alert("Login successful!");
-        navigate("/ex");
+        navigate("/employees");
       } else {
         alert("Login failed. Please check your credentials.");
       }

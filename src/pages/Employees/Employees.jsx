@@ -73,34 +73,25 @@ const Employee = () => {
   const filterData = (data) => {
     const today = new Date();
 
+    // console.log(data)
+
     return data.filter((user) => {
-      const fullName = `${user.FIRST_NAME ?? ""} ${
-        user.LAST_NAME ?? ""
-      }`.toLowerCase();
+      const fullName = `${user.FIRST_NAME ?? ""} ${user.LAST_NAME ?? ""
+        }`.toLowerCase();
       const hireDate = new Date(user.HIRE_DATE);
       const sowEndDate = user.C_SOW_End ? new Date(user.C_SOW_End) : null;
       const from = filters.hireDateFrom ? new Date(filters.hireDateFrom) : null;
       const to = filters.hireDateTo ? new Date(filters.hireDateTo) : null;
 
       const isNameMatch = fullName.includes(filters.name.toLowerCase());
-      const isHireDateMatch =
-        (!from || hireDate >= from) && (!to || hireDate <= to);
-      const isStatusMatch = !filters.status || user.Status === filters.status;
-      const isLocationMatch =
-        !filters.location || user.LOCATION_CONCAT === filters.location;
-      const isParticipationTypeMatch =
-        !filters.participationType ||
-        user.PARTICIPATION_TYPE === filters.participationType;
-      const isGroupCodeMatch =
-        !filters.groupCode || user.C_GROUP_CODE === filters.groupCode;
-      const isClientMatch =
-        !filters.client || user.C_ASSIGNED_CLIENT === filters.client;
+      const isHireDateMatch = (!from || hireDate >= from) && (!to || hireDate <= to);
+      const isStatusMatch = !filters.status || user.Employee_Status === filters.status;
+      const isLocationMatch = !filters.location || user.LOCATION_CONCAT === filters.location;
+      const isParticipationTypeMatch = !filters.participationType || user.PARTICIPATION_TYPE === filters.participationType;
+      const isGroupCodeMatch = !filters.groupCode || user.C_GROUP_CODE === filters.groupCode;
+      const isClientMatch = !filters.client || user.C_ASSIGNED_CLIENT === filters.client;
       const allocation = user.Total_Allocation ?? 0;
-      const isAllocationMatch =
-        !filters.allocation ||
-        (filters.allocation === "over" && allocation > 100) ||
-        (filters.allocation === "under" && allocation < 100) ||
-        (filters.allocation === "fully" && allocation === 100);
+      const isAllocationMatch = !filters.allocation || (filters.allocation === "over" && allocation > 100) || (filters.allocation === "under" && allocation < 100) || (filters.allocation === "fully" && allocation === 100);
 
       const isSowEndInFuture = !sowEndDate || sowEndDate >= today;
 
@@ -183,46 +174,38 @@ const Employee = () => {
 
   const filteredUsers = filterData(users);
 
-
   const adduser = () => {
     setIsOverlayOpen(true);
   };
-  
+
   return (
-   
-  
-    
-
-
     <div className="p-5">
-
-
       {/* overlay component */}
       {isOverlayOpen && (
-  <div className="fixed inset-0 z-50 flex ">
-    {/* Background Dimming */}
-    <div
-      className="absolute inset-0 bg-black opacity-50"
-      onClick={() => setIsOverlayOpen(false)}
-    ></div>
+        <div className="fixed inset-0 z-50 flex ">
+          {/* Background Dimming */}
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setIsOverlayOpen(false)}
+          ></div>
 
-    {/* Slide-in Panel */}
-    {/* <div className="ml-auto w-full max-w-md bg-white shadow-xl z-50 h-full p-6 animate-slide-in-right overflow-y-auto"> */}
-    <div className="ml-auto w-full max-w-sm bg-white z-50 h-full p-6 animate-slide-in-right overflow-y-auto">
+          {/* Slide-in Panel */}
+          {/* <div className="ml-auto w-full max-w-md bg-white shadow-xl z-50 h-full p-6 animate-slide-in-right overflow-y-auto"> */}
+          <div className="ml-auto w-full max-w-sm bg-white z-50 h-full p-6 animate-slide-in-right overflow-y-auto">
 
-    <div className="flex justify-end mb-4">
-  <button
-    onClick={() => setIsOverlayOpen(false)}
-    className="text-gray-600 hover:text-black text-2xl"
-  >
-    X
-  </button>
-</div>
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setIsOverlayOpen(false)}
+                className="text-gray-600 hover:text-black text-2xl"
+              >
+                X
+              </button>
+            </div>
 
-      <AddUser onSuccess={() => setIsOverlayOpen(false)} />
-    </div>
-  </div>
-)}
+            <AddUser onSuccess={() => setIsOverlayOpen(false)} />
+          </div>
+        </div>
+      )}
 
 
 
@@ -232,96 +215,96 @@ const Employee = () => {
         {/* <div className="fixed top-[90px] max-w-[12rem] h-[calc(100vh-50px)] flex flex-col gap-4 pt-[30px] px-[13px] mb-6  bg-[#e2f4ff] overflow-y-auto"> */}
         <div className="fixed top-[90px] max-w-[12rem] h-[calc(100vh-50px)] flex flex-col gap-4 pt-[30px] px-[13px] pb-6 bg-[#e2f4ff] overflow-y-auto rounded-2xl shadow-lg border border-gray-200">
 
-{/* Name Input */}
-<div>
-  <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-700">Search by Name</label>
-  <input
-    id="name"
-    type="text"
-    className="w-full p-2 border rounded-2xl shadow-lg bg-white"
-    style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
-    value={filters.name}
-    onChange={handleInputChange}
-  />
-</div>
+          {/* Name Input */}
+          <div>
+            <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-700">Search by Name</label>
+            <input
+              id="name"
+              type="text"
+              className="w-full p-2 border rounded-2xl shadow-lg bg-white"
+              style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+              value={filters.name}
+              onChange={handleInputChange}
+            />
+          </div>
 
-{/* Hire Date From */}
-<div>
-  <label htmlFor="hireDateFrom" className="block mb-1 text-sm font-medium text-gray-700">Hire Date From</label>
-  <input
-    id="hireDateFrom"
-    type="date"
-    className="w-full p-2 border rounded-2xl shadow-sm bg-white"
-    style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
-    value={filters.hireDateFrom}
-    onChange={handleInputChange}
-  />
-</div>
+          {/* Hire Date From */}
+          <div>
+            <label htmlFor="hireDateFrom" className="block mb-1 text-sm font-medium text-gray-700">Hire Date From</label>
+            <input
+              id="hireDateFrom"
+              type="date"
+              className="w-full p-2 border rounded-2xl shadow-sm bg-white"
+              style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+              value={filters.hireDateFrom}
+              onChange={handleInputChange}
+            />
+          </div>
 
-{/* Hire Date To */}
-<div>
-  <label htmlFor="hireDateTo" className="block mb-1 text-sm font-medium text-gray-700">Hire Date To</label>
-  <input
-    id="hireDateTo"
-    type="date"
-    className="w-full p-2 border rounded-2xl shadow-sm bg-white"
-    style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
-    value={filters.hireDateTo}
-    onChange={handleInputChange}
-  />
-</div>
+          {/* Hire Date To */}
+          <div>
+            <label htmlFor="hireDateTo" className="block mb-1 text-sm font-medium text-gray-700">Hire Date To</label>
+            <input
+              id="hireDateTo"
+              type="date"
+              className="w-full p-2 border rounded-2xl shadow-sm bg-white"
+              style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+              value={filters.hireDateTo}
+              onChange={handleInputChange}
+            />
+          </div>
 
-{/* Utility function to render selects */}
-{[
-  { id: "status", label: "Status", options: ["", "ACTIVE", "INACTIVE"] },
-  { id: "allocation", label: "Allocation", options: ["", "over", "under", "fully"] },
-  { id: "participationType", label: "Participation Type", options: [...new Set(users.map(u => u.PARTICIPATION_TYPE))] },
-  { id: "location", label: "Location", options: [...new Set(users.map(u => u.LOCATION_CONCAT))] },
-  { id: "groupCode", label: "Group Code", options: [...new Set(users.map(u => u.C_GROUP_CODE))] },
-  { id: "client", label: "Client", options: [...new Set(users.map(u => u.C_ASSIGNED_CLIENT))] },
-].map(({ id, label, options }) => (
-  <div key={id}>
-    <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
-    <select
-      id={id}
-      className="w-full p-2 border rounded-2xl shadow-sm bg-white text-gray-700"
-      style={{
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        color: "#000",
-        appearance: "none",
-        backgroundImage:
-          "url(\"data:image/svg+xml,%3Csvg fill='red' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\")",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 0.5rem center",
-        backgroundSize: "1.25em",
-      }}
-      value={filters[id]}
-      onChange={handleInputChange}
-    >
-      {id === "status" || id === "allocation"
-        ? options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt === "" ? `All ${label}s` : opt}
-            </option>
-          ))
-        : [<option key="">All {label}s</option>, ...options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))]}
-    </select>
-  </div>
-))}
+          {/* Utility function to render selects */}
+          {[
+            { id: "status", label: "Status", options: ["", "ACTIVE", "INACTIVE"] },
+            { id: "allocation", label: "Allocation", options: ["", "over", "under", "fully"] },
+            { id: "participationType", label: "Participation Type", options: [...new Set(users.map(u => u.PARTICIPATION_TYPE))] },
+            { id: "location", label: "Location", options: [...new Set(users.map(u => u.LOCATION_CONCAT))] },
+            { id: "groupCode", label: "Group Code", options: [...new Set(users.map(u => u.C_GROUP_CODE))] },
+            { id: "client", label: "Client", options: [...new Set(users.map(u => u.C_ASSIGNED_CLIENT))] },
+          ].map(({ id, label, options }) => (
+            <div key={id}>
+              <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
+              <select
+                id={id}
+                className="w-full p-2 border rounded-2xl shadow-sm bg-white text-gray-700"
+                style={{
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  color: "#000",
+                  appearance: "none",
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg fill='red' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\")",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0.5rem center",
+                  backgroundSize: "1.25em",
+                }}
+                value={filters[id]}
+                onChange={handleInputChange}
+              >
+                {id === "status" || id === "allocation"
+                  ? options.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt === "" ? `All ${label}` : opt}
+                    </option>
+                  ))
+                  : [<option key="">All {label}s</option>, ...options.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt === "" ? `All ${label}` : opt}
+                    </option>
+                  ))]}
+              </select>
+            </div>
+          ))}
 
-{/* Clear Filters Button */}
-<button
-  onClick={clearFilters}
-  className="p-2 bg-red-500 text-black rounded-2xl shadow-sm mb-4"
-  style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
->
-  Clear Filters
-</button>
-</div>
+          {/* Clear Filters Button */}
+          <button
+            onClick={clearFilters}
+            className="p-2 bg-red-500 text-black rounded-2xl shadow-sm mb-4"
+            style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+          >
+            Clear Filters
+          </button>
+        </div>
 
 
         <div>

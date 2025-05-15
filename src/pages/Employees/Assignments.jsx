@@ -5,7 +5,12 @@ import {
     Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
- 
+import logo from "./icons8-excel-48.png";
+import pluslogo from "./icons8-plus-math-80.png";
+import AddAllocation from './AddAllocation';
+import AddAllocationOverlay from './AddAllocationOverlay';
+import EditAllocationOverlay from './EditAllocationOverlay';
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.status-active`]: {
         color: theme.palette.success.main,
@@ -14,7 +19,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
         color: theme.palette.error.main,
     },
 }));
- 
+
 const Assignments = () => {
     const { employeeId } = useParams();
     // console.log(employeeId)
@@ -46,9 +51,13 @@ const Assignments = () => {
         C_SOW_End: '',
     });
     const [allocationAlert, setAllocationAlert] = useState('');
- 
+    const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+    const [isAddAllocationOpen, setIsAddAllocationOpen] = useState(false);
+    const [isEditAllocationOpen, setIsEditAllocationOpen] = useState(false);
+    const [allocationToEdit, setAllocationToEdit] = useState(null);
+
     const API_BASE_URL = 'https://flash-backend-cpfrguethpanfhdz.centralus-01.azurewebsites.net/api';
- 
+
     const formatDate = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -57,8 +66,8 @@ const Assignments = () => {
         const year = date.getFullYear();
         return `${month}-${day}-${year}`;
     };
- 
- 
+
+
     const fetchWithRetry = useCallback(async (url, options, retries = 3) => {
         for (let i = 0; i < retries; i++) {
             try {
@@ -80,9 +89,9 @@ const Assignments = () => {
         }
         throw new Error(`Failed to fetch data from ${url} after multiple attempts`);
     }, []);
- 
- 
- 
+
+
+
     const fetchEmployeeData = useCallback(async (id) => {
         setLoadingEmployee(true);
         setError(null);
@@ -110,9 +119,9 @@ const Assignments = () => {
             setLoadingEmployee(false);
         }
     }, [fetchWithRetry, API_BASE_URL]); // Ensure API_BASE_URL is in the dependency array
- 
- 
- 
+
+
+
     const fetchEmployeeAllocations = useCallback(async (id) => {
         setLoadingAllocations(true);
         setError(null);
@@ -140,8 +149,8 @@ const Assignments = () => {
             setLoadingAllocations(false);
         }
     }, [fetchWithRetry, API_BASE_URL]); // Ensure API_BASE_URL is in the dependency array
- 
- 
+
+
     const fetchData = useCallback(async (endpoint) => {
         try {
             const response = await fetchWithRetry(
@@ -165,7 +174,7 @@ const Assignments = () => {
             return []; // Consistent return of an array on error
         }
     }, [fetchWithRetry, API_BASE_URL]); // Ensure API_BASE_URL is in the dependency array
- 
+
     const fetchDataForDropdowns = useCallback(async () => {
         try {
             const [departmentData, jobPositionData, locationData, participationData, projectData, managerData] = await Promise.all([
@@ -187,9 +196,9 @@ const Assignments = () => {
             setError('Failed to load dropdown data.');
         }
     }, [fetchData]);
- 
- 
- 
+
+
+
     useEffect(() => {
         if (employeeId) {
             fetchEmployeeData(employeeId);
@@ -197,7 +206,7 @@ const Assignments = () => {
         }
         fetchDataForDropdowns();
     }, [employeeId, fetchEmployeeData, fetchEmployeeAllocations, fetchDataForDropdowns]);
- 
+
     useEffect(() => {
         if (allocations.length > 0) {
             checkAllocationStatus();
@@ -205,7 +214,7 @@ const Assignments = () => {
             setAllocationAlert('');
         }
     }, [allocations]);
- 
+
     const handleNewAllocationClick = () => {
         setNewAllocationFormVisible(true);
         setEditAllocation(null);
@@ -223,7 +232,7 @@ const Assignments = () => {
             C_SOW_End: '',
         });
     };
- 
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setNewAllocationData(prevData => ({
@@ -231,7 +240,7 @@ const Assignments = () => {
             [name]: value,
         }));
     };
- 
+
     const handleSaveNewAllocation = async () => {
         if (!newAllocationData.ALLOCATION) {
             alert('Allocation field must not be empty');
@@ -241,18 +250,18 @@ const Assignments = () => {
             alert('Allocation cannot be greater than 100%');
             return;
         }
- 
+
         if (!newAllocationData.C_SOW_Start || !newAllocationData.C_SOW_End) {
             alert('Please fill in both start and end dates.');
             return;
         }
- 
+
         if (newAllocationData.C_SOW_Start > newAllocationData.C_SOW_End) {
             alert('Please make sure start date is before the end dates.');
             return;
         }
- 
- 
+
+
         try {
             const payload = {
                 ...newAllocationData,
@@ -281,7 +290,7 @@ const Assignments = () => {
             alert('Error creating allocation.');
         }
     };
- 
+
     const handleDeleteAllocation = async (allocationId) => {
         if (window.confirm('Are you sure you want to delete this allocation?')) {
             try {
@@ -309,52 +318,9 @@ const Assignments = () => {
             }
         }
     };
- 
-    const handleEditDatesClick = (allocation) => {
-        setEditAllocation(allocation);
-    };
- 
- 
-    // const handleSaveEditedDates = async () => {
-    //     if (!editAllocation?.AllocationID) return;
-    //     if (!editAllocation?.C_SOW_Start || !editAllocation?.C_SOW_End) {
-    //         alert('Please fill in both start and end dates.');
-    //         return;
-    //     }
- 
-    //     if (editAllocation?.C_SOW_Start > editAllocation?.C_SOW_End) {
-    //         alert('Start date should be prior to the end date')
-    //         return;
-    //     }
- 
-    //     try {
-    //         const updatedAllocation = {
-    //             C_SOW_Start: editAllocation.C_SOW_Start.replace(/-/g, ''),
-    //             C_SOW_End: editAllocation.C_SOW_End.replace(/-/g, '')
-    //         };
-    //         const response = await fetchWithRetry(
-    //             `${API_BASE_URL}/update/Fact_Employee_Allocation/${editAllocation.AllocationID}`,
-    //             {
-    //                 method: 'PUT',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify(updatedAllocation),
-    //             }
-    //         );
-    //         const data = await response.json();
-    //         if (data.status === 200) {
-    //             alert('Allocation dates updated successfully');
-    //             setEditAllocation(null);
-    //             fetchEmployeeAllocations(employeeId);
-    //         } else {
-    //             console.error('Error updating allocation dates:', data);
-    //             alert('Failed to update allocation dates.');
-    //         }
-    //     } catch (err) {
-    //         console.error('Error updating allocation dates:', err);
-    //         alert('Error updating allocation dates.');
-    //     }
+
+    // const handleEditDatesClick = (allocation) => {
+    //     setEditAllocation(allocation);
     // };
 
     const formatDateToYYYYMMDD = (dateStr) => {
@@ -364,25 +330,25 @@ const Assignments = () => {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}${month}${day}`;
     };
-        
+
     const handleSaveEditedDates = async () => {
         if (!editAllocation?.AllocationID) return;
         if (!editAllocation?.C_SOW_Start || !editAllocation?.C_SOW_End) {
             alert('Please fill in both start and end dates.');
             return;
         }
-    
+
         if (new Date(editAllocation.C_SOW_Start) > new Date(editAllocation.C_SOW_End)) {
             alert('Start date should be prior to the end date');
             return;
         }
-    
+
         try {
             const updatedAllocation = {
                 C_SOW_Start: formatDateToYYYYMMDD(editAllocation.C_SOW_Start),
                 C_SOW_End: formatDateToYYYYMMDD(editAllocation.C_SOW_End),
             };
-    
+
             const response = await fetchWithRetry(
                 `${API_BASE_URL}/update/Fact_Employee_Allocation/${editAllocation.AllocationID}`,
                 {
@@ -393,7 +359,7 @@ const Assignments = () => {
                     body: JSON.stringify(updatedAllocation),
                 }
             );
-    
+
             const data = await response.json();
             if (data.status === 200) {
                 alert('Allocation dates updated successfully');
@@ -408,12 +374,12 @@ const Assignments = () => {
             alert('Error updating allocation dates.');
         }
     };
-    
- 
+
+
     const checkAllocationStatus = () => {
         console.log("All allocations:", allocations);
         const currentDate = new Date(); // Get the current date and time
- 
+
         // Filter allocations where the end date is on or after the current date
         const activeAllocations = allocations.filter(alloc => {
             if (alloc.C_SOW_End) {
@@ -425,14 +391,14 @@ const Assignments = () => {
             // based on how you handle open-ended allocations)
             return true;
         });
- 
+
         console.log("Active allocations:", activeAllocations);
- 
+
         const totalAllocation = activeAllocations.reduce(
             (sum, alloc) => sum + parseFloat(alloc.ALLOCATION || 0),
             0
         );
- 
+
         if (totalAllocation > 100) {
             setAllocationAlert(`USER IS OVER ALLOCATED (Active: ${totalAllocation}%)`);
         } else if (totalAllocation < 100) {
@@ -441,15 +407,15 @@ const Assignments = () => {
             setAllocationAlert(`USER IS FULLY ALLOCATED (Active: ${totalAllocation}%)`);
         }
     };
- 
+
     if (loadingEmployee || loadingAllocations) {
         return <div className="text-center py-8">Loading...</div>;
     }
- 
+
     if (error) {
         return <div className="text-red-500 text-center py-8">{error}</div>;
     }
- 
+
     if (!employee) {
         return <div className="text-center py-8">Employee data not found.</div>;
     }
@@ -470,7 +436,7 @@ const Assignments = () => {
             "SOW Start",
             "SOW End"
         ];
-    
+
         const rows = allocations.map((allocation) => [
             allocation.AllocationID,
             allocation.Employee_Full_Name,
@@ -484,7 +450,7 @@ const Assignments = () => {
             formatDate(allocation.C_SOW_Start),
             formatDate(allocation.C_SOW_End)
         ]);
-    
+
         const csvContent =
             "data:text/csv;charset=utf-8," +
             [headers, ...rows]
@@ -498,25 +464,66 @@ const Assignments = () => {
                         .join(",")
                 )
                 .join("\n");
-    
+
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
         // link.setAttribute("download", "allocations.csv");
         const fileName = allocations.length > 0
-        ? `${allocations[0].Employee_Full_Name?.replace(/\s+/g, '_') || 'employee'}_allocations.csv`
-        : 'employee_allocations.csv';
+            ? `${allocations[0].Employee_Full_Name?.replace(/\s+/g, '_') || 'employee'}_allocations.csv`
+            : 'employee_allocations.csv';
         link.setAttribute("download", fileName);
 
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
-    
- 
+
+
+
+    const addallocation = () => {
+        setIsOverlayOpen(true);
+    };
+
+    const handleAddAllocationClick = () => {
+        setIsAddAllocationOpen(true);
+    };
+
+    const handleCloseAddAllocation = () => {
+        setIsAddAllocationOpen(false);
+    };
+
+    const handleAddAllocationSuccess = () => {
+        setIsAddAllocationOpen(false);
+        fetchEmployeeAllocations(employeeId); // Refresh allocations on success
+    };
+
+    const handleEditDatesClick = (allocation) => {
+        setAllocationToEdit(allocation);
+        setIsEditAllocationOpen(true);
+    };
+
+    const handleCloseEditAllocation = () => {
+        setIsEditAllocationOpen(false);
+        setAllocationToEdit(null);
+    };
+
+
+    const handleEditAllocationSuccess = () => {
+        setIsEditAllocationOpen(false);
+        setAllocationToEdit(null);
+        fetchEmployeeAllocations(employeeId); // Refresh allocations on success
+    };
+
+
     return (
+
         <div className="container mx-auto p-4 min-h-screen">
-            <div className="bg-white shadow-md rounded-md p-6 mb-4">
+
+            <div className='flex justify-center'>
+                <p className='border rounded-md border-gray-400 p-3 text-gray-500 text-4xl mb-4'>Employee Allocation</p>
+            </div>
+            {/* <div className="bg-white shadow-md rounded-md p-6 mb-4">
                 <Typography variant="h4" gutterBottom>{employee.FIRST_NAME} {employee.LAST_NAME}</Typography>
                 <Typography variant="subtitle1" gutterBottom>Employee ID: {employee.EmployeeID}</Typography>
                 <Typography variant="subtitle1" gutterBottom>Hire Date: {new Date(employee.HIRE_DATE).toLocaleDateString()}</Typography>
@@ -529,15 +536,100 @@ const Assignments = () => {
                     </Typography>
                 )}
                 {employee.Employee_Status === 'ACTIVE' && (
-                    <Button variant="contained" color="primary" onClick={handleNewAllocationClick}>
-                        New Allocation
-                    </Button>
+                    // <Button variant="contained" color="primary" onClick={handleNewAllocationClick}>
+                    //     New Allocation
+                    // </Button>
+                    <img
+                        onClick={handleNewAllocationClick}
+                        src={pluslogo}
+                        alt="Logo"
+                        className="h-8 w-8 cursor-pointer mr-30 p-[1px] rounded border border-gray-700 shadow-xl"
+                    />
                 )}
-      
-                  
-  
-            </div>
- 
+            </div> */}
+
+            <Paper className="bg-white shadow-md rounded-md p-6 mb-4">
+                <TableContainer>
+                    <Table>
+                        <TableHead className="bg-gray-200">
+                            <TableRow>
+                                <TableCell align="left">ID</TableCell>
+                                <TableCell align="left">Full Name</TableCell>
+                                <TableCell align="left">Hire Date</TableCell>
+                                <TableCell align="left">Status</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow key={employee?.EmployeeID}>
+                                <TableCell align="left">{employee?.EmployeeID}</TableCell>
+                                <TableCell align="left">{employee?.FIRST_NAME} {employee?.LAST_NAME}</TableCell>
+                                <TableCell align="left">{new Date(employee?.HIRE_DATE).toLocaleDateString()}</TableCell>
+                                <TableCell align="left" className={employee?.Employee_Status === 'ACTIVE' ? 'text-green-500' : 'text-red-500'}>
+                                    {employee?.Employee_Status}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                {allocationAlert && (
+                    <Typography variant="body1" className={allocationAlert.includes('OVER') ? 'text-red-500' : allocationAlert.includes('UNDER') ? 'text-orange-500' : 'text-green-500'} gutterBottom>
+                        {allocationAlert}
+                    </Typography>
+                )}
+                {employee?.Employee_Status === 'ACTIVE' && (
+                    <img
+                        onClick={handleAddAllocationClick}
+                        src={pluslogo}
+                        alt="Add Allocation"
+                        className="h-8 w-8 cursor-pointer mr-30 mt-3 p-[1px] rounded border border-gray-700 shadow-xl"
+                    />
+                )}
+            </Paper>
+
+            {isAddAllocationOpen && (
+                <AddAllocationOverlay
+                    open={isAddAllocationOpen}
+                    onClose={handleCloseAddAllocation}
+                    onSuccess={handleAddAllocationSuccess}
+                />
+            )}
+
+            {isEditAllocationOpen && allocationToEdit && (
+                <EditAllocationOverlay
+                    open={isEditAllocationOpen}
+                    onClose={handleCloseEditAllocation}
+                    onSuccess={handleEditAllocationSuccess}
+                    allocationData={allocationToEdit}
+                />
+            )}
+
+
+
+            {/* {isOverlayOpen && (
+                <div className="fixed inset-0 z-50 flex ">
+                    
+                    <div
+                        className="absolute inset-0 bg-black opacity-50"
+                        onClick={() => setIsOverlayOpen(false)}
+                    ></div>
+
+                    
+                    <div className="ml-auto w-full max-w-sm bg-white z-50 h-full p-6 animate-slide-in-right overflow-y-auto">
+
+                        <div className="flex justify-end mb-4">
+                            <button
+                                onClick={() => setIsOverlayOpen(false)}
+                                className="text-gray-600 hover:text-black text-2xl"
+                            >
+                                X
+                            </button>
+                        </div>
+
+                        <AddAllocation onSuccess={() => setIsOverlayOpen(false)} />
+                    </div>
+                </div>
+            )} */}
+
             {newAllocationFormVisible && (
                 <div className="bg-white shadow-md rounded-md p-6 mb-4">
                     <Typography variant="h6" gutterBottom>Create New Allocation</Typography>
@@ -615,7 +707,7 @@ const Assignments = () => {
                     </div>
                 </div>
             )}
- 
+
             {editAllocation && (
                 <div className="bg-white shadow-md rounded-md p-6 mb-4">
                     <Typography variant="h6" gutterBottom>Edit Allocation Dates</Typography>
@@ -648,31 +740,8 @@ const Assignments = () => {
                         margin="normal"
                         required
                         InputLabelProps={{ shrink: true }}
-                    /> 
-
-                    {/* <TextField
-                        fullWidth
-                        label="C SOW Start"
-                        type="date"
-                        value={editAllocation.C_SOW_Start ? editAllocation.C_SOW_Start.split('T')[0] : ''}
-                        onChange={handleStartDateChange}
-                        margin="normal"
-                        required
                     />
-                    <TextField
-                        fullWidth
-                        label="C SOW End"
-                        type="date"
-                        value={editAllocation.C_SOW_End ? editAllocation.C_SOW_End.split('T')[0] : ''}
-                        onChange={handleEndDateChange}
-                        margin="normal"
-                        required
-                        slotProps={{
-                            input: {
-                                min: editAllocation.C_SOW_Start ? editAllocation.C_SOW_Start.split('T')[0] : undefined,
-                            },
-                        }}
-                    /> */}
+
                     <div className="mt-4">
                         <Button variant="contained" color="primary" onClick={handleSaveEditedDates} className="mr-2">
                             Save Dates
@@ -680,12 +749,17 @@ const Assignments = () => {
                         <Button variant="outlined" onClick={() => setEditAllocation(null)}>
                             Close
                         </Button>
-                        
+
                     </div>
                 </div>
             )}
-          
-          <button onClick={handleDownloadCSV} className="p-2 bg-green-500 text-black rounded">Download CSV</button>
+
+            <img
+                onClick={handleDownloadCSV}
+                src={logo}
+                alt="Logo"
+                className="h-8 w-8 cursor-pointer mr-5 mb-3 p-[1px] rounded border border-gray-400 shadow-md"
+            />
             <Paper className="shadow-md">
                 <TableContainer>
                     <Table>
@@ -720,12 +794,12 @@ const Assignments = () => {
                                     <TableCell align="left">{formatDate(allocation.C_SOW_Start)}</TableCell>
                                     <TableCell align="left">{formatDate(allocation.C_SOW_End)}</TableCell>
                                     <TableCell align="left">
-                                        <Button size="small" variant="outlined" onClick={() => handleEditDatesClick(allocation)} className="mr-2">
-                                            Edit Allocations
-                                        </Button>
-                                        <Button size="small" variant="outlined" color="error" onClick={() => handleDeleteAllocation(allocation.AllocationID)}>
-                                            Delete Allocations
-                                        </Button>
+                                        <button size="small" onClick={() => handleEditDatesClick(allocation)} className="text-blue-600 font-medium py-1 px-2 mr-2" >
+                                            EDIT
+                                        </button>
+                                        <button size="small" color="error" onClick={() => handleDeleteAllocation(allocation.AllocationID)} className="text-blue-600 font-medium py-1 px-2 my-1">
+                                            DELETE
+                                        </button>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -736,5 +810,5 @@ const Assignments = () => {
         </div>
     );
 };
- 
+
 export default Assignments;
